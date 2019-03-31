@@ -1,10 +1,10 @@
 import argparse
 import json
 
-from models.EnvironmentModel import EnvironmentModel
-from repository.ec2_instances import Ec2InstancesRepo
-from repository.key_pairs import KeyPairsRepo
-from usecases.instances import CreateInstancesUseCase
+from models.models import EnvironmentModel
+from repository.ec2_instances_repo import Ec2InstancesRepo
+from repository.key_pairs_repo import KeyPairsRepo
+from usecases.instance_creation_usecase import CreateInstancesUseCase
 
 
 class CliPresenter:
