@@ -10,36 +10,41 @@ from usecases.instance_creation_usecase import CreateInstancesUseCase
 
 
 class CliPresenter:
-
     def __init__(self):
         self.args = self._parse_args()
 
     def _parse_args(self):
-        parser = argparse.ArgumentParser(description="Its a awesome environment script builder")
+        parser = argparse.ArgumentParser(
+            description="Its a awesome environment script builder"
+        )
         parser.add_argument("-env", action="store", help="json env file", dest="env")
         parser.add_argument(
-            "-key", action="store", help="key amazon ex: <access_key:secret_key>", dest="key"
+            "-key",
+            action="store",
+            help="key amazon e.g: <access_key:secret_key>",
+            dest="key",
         )
         return parser.parse_args()
 
     def execute(self):
-        ec2 = boto3.resource(service_name='ec2')
+        ec2 = boto3.resource(service_name="ec2")
         if self.args.key:
             key = self.args.key.strip(":")
             ec2 = boto3.resource(
-                service_name='ec2',
+                service_name="ec2",
                 aws_access_key_id=key[0],
-                aws_secret_access_key=key[1]
+                aws_secret_access_key=key[1],
             )
         with open(self.args.env) as env_file:
             env_dict = json.load(env_file)
             use_case = CreateInstancesUseCase(
                 ec2_repo=Ec2InstancesRepo(ec2),
                 key_pairs_repo=KeyPairsRepo(ec2),
-                ssh_repo=SshCommandsRepo()
+                ssh_repo=SshCommandsRepo(),
             )
-            result = use_case.process(
-                EnvironmentModel(**env_dict)
-            )
+            environment = EnvironmentModel(**env_dict)
+            result = use_case.process(environment)
 
-        print(result)
+        print(f"Environment {environment.name} is created.")
+        for r in result:
+            print(r)
