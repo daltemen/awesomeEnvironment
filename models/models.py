@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class Ami(Enum):
-    UBUNTU = "ami-00b6a8a2bd28daf19"
+    UBUNTU = "ami-06397100adf427136"
 
 
 class EnvironmentModel:
@@ -26,3 +26,11 @@ class ServerModel:
 
     def __str__(self):
         return f"name: {self.name} deps: {self.deps}"
+
+
+class Result:
+
+    def __init__(self, **kwargs):
+        self.name_server = kwargs.get("name_server")
+        self.private_ip = kwargs.get("private_ip")
+        self.public_ip = kwargs.get("public_ip")
