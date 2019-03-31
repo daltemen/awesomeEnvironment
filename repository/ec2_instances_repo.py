@@ -1,33 +1,32 @@
-import boto3
-
 from models.models import Ami
 
 
 class Ec2InstancesRepo:
 
-    def __init__(self, ec2_resouce):
-        self.ec2 = ec2_resouce
+    def __init__(self, ec2_resource):
+        self.ec2 = ec2_resource
+        self.subnet_id = None
+        self.group_id = None
 
-    def create(self, env_model, server_model):
-        vpc = self._create_vpc()
-        sec_group, subnet = self._create_security_group_and_subnet(vpc)
+    def create(self, server_model):
+        print(self.subnet_id)
+        if not self.subnet_id or self.group_id:
+            vpc = self._create_vpc()
+            sec_group, subnet = self._create_security_group_and_subnet(vpc)
+            self.subnet_id = subnet.id
+            self.group_id = sec_group.id
 
-        subnet_id = "subnet-04747d35b262ba740"
-        group_id = "sg-087f8e1446d3050d8"
         instances = self.ec2.create_instances(
             ImageId=Ami.UBUNTU.value,
-            Placement={
-                'AvailabilityZone': f"{env_model.region}c"
-            },
             MinCount=1,
             MaxCount=1,
             InstanceType='t2.micro',
             KeyName=server_model.name,
             NetworkInterfaces=[{
-                'SubnetId': subnet.id,
+                'SubnetId': self.subnet_id,
                 'DeviceIndex': 0,
                 'AssociatePublicIpAddress': True,
-                'Groups': [sec_group.id]
+                'Groups': [self.group_id]
             }]
         )
         print("creating ec2 instance...")
@@ -42,7 +41,7 @@ class Ec2InstancesRepo:
         vpc = self.ec2.create_vpc(CidrBlock=cidr)
         vpc.create_tags(Tags=[{"Key": "Name", "Value": "daniel_default_vpc"}])
         vpc.wait_until_available()
-        print("vpc created: {vpc.id}")
+        print(f"vpc created: {vpc.id}")
         return vpc
 
     def _create_security_group_and_subnet(self, vpc):
@@ -59,7 +58,7 @@ class Ec2InstancesRepo:
         )
         sec_group.authorize_ingress(
             CidrIp='0.0.0.0/0',
-            IpProtocol='ssh',
+            IpProtocol='tcp',
             FromPort=22,
             ToPort=22
         )

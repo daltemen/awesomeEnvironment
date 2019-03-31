@@ -18,7 +18,7 @@ class CliPresenter:
         parser = argparse.ArgumentParser(description="Its a awesome environment script builder")
         parser.add_argument("-env", action="store", help="json env file", dest="env")
         parser.add_argument(
-            "-key", action="store", help="key amazon ex: <access_key:secret_key>", dest="key"
+            "-key", action="store", help="key amazon e.g: <access_key:secret_key>", dest="key"
         )
         return parser.parse_args()
 
@@ -38,8 +38,11 @@ class CliPresenter:
                 key_pairs_repo=KeyPairsRepo(ec2),
                 ssh_repo=SshCommandsRepo()
             )
+            environment = EnvironmentModel(**env_dict)
             result = use_case.process(
-                EnvironmentModel(**env_dict)
+                environment
             )
 
-        print(result)
+        print(f"Environment {environment.name} is created.")
+        for r in result:
+            print(r)

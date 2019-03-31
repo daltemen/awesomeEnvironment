@@ -34,3 +34,13 @@ class Result:
         self.name_server = kwargs.get("name_server")
         self.private_ip = kwargs.get("private_ip")
         self.public_ip = kwargs.get("public_ip")
+
+    def __str__(self):
+        return f"{self.name_server}: private ip: {self.private_ip} / public_ip: {self.public_ip}"
+
+# (Pdb) result[0].name_server
+# 'controller'
+# (Pdb) result[0].private_ip
+# '192.168.1.213'
+# (Pdb) result[0].public_ip
+# '18.144.40.92'

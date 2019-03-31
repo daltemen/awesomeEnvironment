@@ -9,9 +9,10 @@ class CreateInstancesUseCase:
 
     def process(self, env_model):
         servers_result = []
+        ec2_repo = self.ec2_repo
         for server in env_model.servers:
             self.key_pairs_repo.create(server)
-            ec2_instance = self.ec2_repo.create(env_model, server)
+            ec2_instance = ec2_repo.create(server)
             self.ssh_repo.install_dependencies(
                 server_model=server,
                 public_ip=ec2_instance.public_ip_address
