@@ -5,11 +5,12 @@ from confs import conf
 
 
 class SshCommandsRepo:
-
     def install_dependencies(self, server_model, public_ip):
         retry_sleep_sec = 7
         time.sleep(retry_sleep_sec)
-        key = paramiko.RSAKey.from_private_key_file(f"{conf.SERVER_KEY_PATH}{server_model.name}.pem")
+        key = paramiko.RSAKey.from_private_key_file(
+            f"{conf.SERVER_KEY_PATH}{server_model.name}.pem"
+        )
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         print("*-------------------------------------------------------*")

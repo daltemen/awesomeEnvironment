@@ -2,7 +2,6 @@ from models.models import Ami
 
 
 class Ec2InstancesRepo:
-
     def __init__(self, ec2_resource):
         self.ec2 = ec2_resource
         self.subnet_id = None
@@ -20,14 +19,16 @@ class Ec2InstancesRepo:
             ImageId=Ami.UBUNTU.value,
             MinCount=1,
             MaxCount=1,
-            InstanceType='t2.micro',
+            InstanceType="t2.micro",
             KeyName=server_model.name,
-            NetworkInterfaces=[{
-                'SubnetId': self.subnet_id,
-                'DeviceIndex': 0,
-                'AssociatePublicIpAddress': True,
-                'Groups': [self.group_id]
-            }]
+            NetworkInterfaces=[
+                {
+                    "SubnetId": self.subnet_id,
+                    "DeviceIndex": 0,
+                    "AssociatePublicIpAddress": True,
+                    "Groups": [self.group_id],
+                }
+            ],
         )
         print("creating ec2 instance...")
         instances[0].wait_until_running()
@@ -47,20 +48,17 @@ class Ec2InstancesRepo:
     def _create_security_group_and_subnet(self, vpc):
         route_table = self._create_route_table(vpc)
 
-        subnet = self.ec2.create_subnet(CidrBlock='192.168.1.0/24', VpcId=vpc.id)
+        subnet = self.ec2.create_subnet(CidrBlock="192.168.1.0/24", VpcId=vpc.id)
         print(f"subnet created: {subnet.id}")
 
         route_table.associate_with_subnet(SubnetId=subnet.id)
 
         print("creating security group...")
         sec_group = self.ec2.create_security_group(
-            GroupName='daniel_slice_0', Description='slice_0 sec group', VpcId=vpc.id
+            GroupName="daniel_slice_0", Description="slice_0 sec group", VpcId=vpc.id
         )
         sec_group.authorize_ingress(
-            CidrIp='0.0.0.0/0',
-            IpProtocol='tcp',
-            FromPort=22,
-            ToPort=22
+            CidrIp="0.0.0.0/0", IpProtocol="tcp", FromPort=22, ToPort=22
         )
         print(f"security group created: {sec_group.id}")
         return sec_group, subnet
@@ -71,9 +69,6 @@ class Ec2InstancesRepo:
         print(f"internet gateway created: {ig.id}")
 
         route_table = vpc.create_route_table()
-        route_table.create_route(
-            DestinationCidrBlock='0.0.0.0/0',
-            GatewayId=ig.id
-        )
+        route_table.create_route(DestinationCidrBlock="0.0.0.0/0", GatewayId=ig.id)
         print(f"Route table id created: {route_table.id}")
         return route_table

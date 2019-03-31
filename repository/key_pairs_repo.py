@@ -3,7 +3,6 @@ from confs import conf
 
 
 class KeyPairsRepo:
-
     def __init__(self, ec2_resouce):
         self.ec2 = ec2_resouce
 
