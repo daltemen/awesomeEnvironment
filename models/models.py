@@ -13,15 +13,16 @@ class EnvironmentModel:
         self.servers = [ServerModel(**server) for server in kwargs.get("servers")]
 
     def __str__(self):
-        return f"name: {self.name} region: {self.region} servers: {self.servers}"
+        return f"name: {self.name} region: {self.region}"
 
 
 class ServerModel:
 
     def __init__(self, **kwargs):
-        self.host_name = kwargs.get("hostname")
-        self.name = kwargs.get("name")
+        raw_name = kwargs.get("name") if kwargs.get("name") else kwargs.get("hostname")
+        self.name = raw_name.strip()
         self.deps = kwargs.get("deps")
 
+
     def __str__(self):
-        return f"host_name: {self.host_name} name: {self.name} deps: {self.deps}"
+        return f"name: {self.name} deps: {self.deps}"
